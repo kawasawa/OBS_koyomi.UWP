@@ -1,0 +1,25 @@
+﻿<Application
+    x:Class="Koyomi.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
+    RequestedTheme="Dark">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <!-- コンバータ -->
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+            <converters:StringFormatConverter x:Key="StringFormat"/>
+
+            <Color x:Key="ApplicationThemeColor">#FF007ACC</Color>
+            <SolidColorBrush x:Key="CalendarSelectedBorderBrush" Color="{StaticResource ApplicationThemeColor}"/>
+            <SolidColorBrush x:Key="InfoContentBackgroundThemeBrush" Color="{StaticResource ApplicationThemeColor}" Opacity="0.5"/>
+
+            <!-- リソースディクショナリ -->
+            <ResourceDictionary.MergedDictionaries>
+                <!-- 参照リソースは先に宣言するように -->
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+</Application>

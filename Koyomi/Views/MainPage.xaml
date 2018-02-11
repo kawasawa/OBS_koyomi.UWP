@@ -1,0 +1,152 @@
+﻿<Page
+    x:Class="Koyomi.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:p="using:Koyomi.Views.Panes"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <x:Double x:Key="WideModeMinWidth">835</x:Double>
+        <x:Double x:Key="LeftAreaWidth">350</x:Double>
+        <x:Double x:Key="RightAreaWidth">660</x:Double>
+        <Thickness x:Key="ContentPadding">20,0</Thickness>
+    </Page.Resources>
+
+    <RelativePanel>
+        <RelativePanel.Background>
+             <!--https://www.pakutaso.com/20171054277post-13484.html--> 
+            <ImageBrush ImageSource="ms-appx:///Views/Resources/Background.jpg" Stretch="UniformToFill"/>
+        </RelativePanel.Background>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="headerPane.Visibility" Value="Collapsed"/>
+                        <Setter Target="calendarPane.Visibility" Value="Collapsed"/>
+                        <Setter Target="subHeaderPane.Visibility" Value="Visible"/>
+                        <Setter Target="subCalendarPane.Visibility" Value="Visible"/>
+                        <Setter Target="dummyForAdjustWidth.Visibility" Value="Collapsed"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource WideModeMinWidth}"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="headerPane.Visibility" Value="Visible"/>
+                        <Setter Target="calendarPane.Visibility" Value="Visible"/>
+                        <Setter Target="subHeaderPane.Visibility" Value="Collapsed"/>
+                        <Setter Target="subCalendarPane.Visibility" Value="Collapsed"/>
+                        <Setter Target="dummyForAdjustWidth.Visibility" Value="Visible"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <Grid RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignBottomWithPanel="True" Padding="{StaticResource ContentPadding}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.Resources>
+                <Style x:Key="HeaderStyle" TargetType="controls:DockPanel">
+                    <Setter Property="MinHeight" Value="100"/>
+                    <Setter Property="Margin" Value="10,15,10,10"/>
+                </Style>
+                <Style x:Key="FooterStyle" TargetType="controls:DockPanel">
+                    <Setter Property="MinHeight" Value="100"/>
+                    <Setter Property="Margin" Value="10,10,10,20"/>
+                </Style>
+                <Style x:Key="SeparatorStyle" TargetType="Border">
+                    <Setter Property="Height" Value="1"/>
+                    <Setter Property="Background" Value="{StaticResource ApplicationSecondaryForegroundThemeBrush}"/>
+                </Style>
+                <Style TargetType="CalendarView">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="CalendarItemBackground" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="PressedBorderBrush" Value="{StaticResource CalendarSelectedBorderBrush}"/>
+                    <Setter Property="SelectedBorderBrush" Value="{StaticResource CalendarSelectedBorderBrush}"/>
+                    <Setter Property="SelectedHoverBorderBrush" Value="{StaticResource CalendarSelectedBorderBrush}"/>
+                    <Setter Property="SelectedPressedBorderBrush" Value="{StaticResource CalendarSelectedBorderBrush}"/>
+                    <Setter Property="OutOfScopeForeground" Value="{ThemeResource ApplicationSecondaryForegroundThemeBrush}"/>
+                    <Setter Property="IsTodayHighlighted" Value="False"/>
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </Style>
+                <Style TargetType="DatePicker">
+                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                </Style>
+            </Grid.Resources>
+
+            <!-- 上部 ヘッダペイン -->
+            <controls:DockPanel x:Name="headerPane" Grid.ColumnSpan="2" Style="{StaticResource HeaderStyle}">
+                <Border controls:DockPanel.Dock="Bottom" Style="{StaticResource SeparatorStyle}"/>
+                <p:HeaderPane DataContext="{x:Bind ViewModel}"/>
+            </controls:DockPanel>
+
+            <!-- 左部 カレンダーペイン -->
+            <ScrollViewer x:Name="calendarPane" Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          Width="{StaticResource LeftAreaWidth}">
+                <StackPanel Margin="0,10">
+                    <CalendarView x:Name="calendarView"
+                                  MinDate="{x:Bind ViewModel.MinDate}" MaxDate="{x:Bind ViewModel.MaxDate}"
+                                  SelectedDatesChanged="CalendarView_SelectedDatesChanged"/>
+                    <Border Height="20"/>
+                    <DatePicker x:Name="datePicker1"
+                                MinYear="{x:Bind ViewModel.MinDate}" MaxYear="{x:Bind ViewModel.MaxDate}"
+                                DateChanged="DatePicker_DateChanged"/>
+                    <Border Height="10"/>
+                    <Button Content="今日へ移動" HorizontalAlignment="Center" Click="Button_Click"/>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- 右部 情報ペイン -->
+            <Grid Grid.Row="1" Grid.Column="1" MaxWidth="{StaticResource RightAreaWidth}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- サイズ固定用ダミーコントロール -->
+                <Viewbox x:Name="dummyForAdjustWidth" Stretch="Fill">
+                    <Button IsEnabled="False"/>
+                </Viewbox>
+
+                <!-- ヘッダペイン(縮小時) -->
+                <controls:DockPanel x:Name="subHeaderPane" Grid.Row="1" Style="{StaticResource HeaderStyle}">
+                    <Border controls:DockPanel.Dock="Bottom" Style="{StaticResource SeparatorStyle}"/>
+                    <p:HeaderPane DataContext="{x:Bind ViewModel}"/>
+                </controls:DockPanel>
+
+                <!-- 情報ペイン本体 -->
+                <ScrollViewer Grid.Row="2" Margin="0,10" Padding="10,0" VerticalScrollBarVisibility="Auto">
+                    <p:InfoPane DataContext="{x:Bind ViewModel}"/>
+                </ScrollViewer>
+
+                <!-- カレンダーペイン(縮小時) -->
+                <controls:DockPanel x:Name="subCalendarPane" Grid.Row="3" Style="{StaticResource FooterStyle}">
+                    <Border controls:DockPanel.Dock="Top" Style="{StaticResource SeparatorStyle}"/>
+                    <Button controls:DockPanel.Dock="Bottom" Content="今日へ移動" HorizontalAlignment="Center" Click="Button_Click"/>
+                    <DatePicker x:Name="datePicker2"
+                                MinYear="{x:Bind ViewModel.MinDate}" MaxYear="{x:Bind ViewModel.MaxDate}"
+                                DateChanged="DatePicker_DateChanged"/>
+                </controls:DockPanel>
+            </Grid>
+        </Grid>
+    </RelativePanel>
+</Page>
